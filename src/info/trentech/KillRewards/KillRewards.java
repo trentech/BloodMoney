@@ -1,11 +1,19 @@
 package info.trentech.KillRewards;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Skeleton.SkeletonType;
 import org.bukkit.entity.Tameable;
 import org.bukkit.entity.Villager.Profession;
@@ -22,6 +30,7 @@ public class KillRewards extends JavaPlugin {
 	public Economy economy;
 	public Objective objective;
 	public Scoreboard board;
+	public HashMap<Player, String> players = new HashMap<Player, String>();
 	
 	@Override
 	public void onEnable(){
@@ -33,11 +42,40 @@ public class KillRewards extends JavaPlugin {
 		getConfig().options().copyDefaults(true);
 		saveConfig();
 		getMobs();
-		
+        
+		if(!getConfig().getBoolean("Levels.Reset-On-Restart")){
+			File file = new File(getDataFolder(),"/players.yml");
+			YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(file);
+			for(String player : playerConfig.getConfigurationSection("Players").getKeys(false)){
+				String stats = playerConfig.getString(player);
+	    		players.put(getServer().getPlayer(UUID.fromString(player)),stats);
+	    	}
+		}
+   	
         board = getServer().getScoreboardManager().getNewScoreboard();
         objective = board.registerNewObjective("Stats", "dummy");
         objective.setDisplayName(ChatColor.DARK_AQUA + "Stats");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+	}
+	
+	@Override
+	public void onDisable(){
+		if(!getConfig().getBoolean("Levels.Reset-On-Restart")){
+			Iterator<Entry<Player, String>> iterator = players.entrySet().iterator();
+			File file = new File(getDataFolder(),"/players.yml");
+			YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(file);
+		    while (iterator.hasNext()) {
+		    	Entry<Player, String> next = iterator.next();
+		    	Player player = next.getKey();
+		    	String stats = next.getValue();
+		    	playerConfig.set(player.getUniqueId().toString(), stats);
+		    	try {
+					playerConfig.save(file);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		    }
+		}
 	}
 
 	public void getMobs(){
@@ -74,6 +112,8 @@ public class KillRewards extends JavaPlugin {
 				}
 			}
 		}
+		
+
 	}
 	
 	public void setMobInfo(String mob) {

@@ -1,12 +1,18 @@
 package info.trentech.KillRewards;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
+import java.util.Map.Entry;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -22,11 +28,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.scoreboard.Score;
 
 public class EventListener implements Listener {
 
-	HashMap<Player, String> players = new HashMap<Player, String>();
 	private KillRewards plugin;
 	public EventListener(KillRewards plugin) {
 		this.plugin = plugin;
@@ -35,7 +42,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerLoginEvent(PlayerJoinEvent event){
 		Player player = event.getPlayer();
-		players.put(player, "0;0;0");
+		plugin.players.put(player, "0;0;0");
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR)
@@ -76,7 +83,7 @@ public class EventListener implements Listener {
 				}
 				double addedMoney = 0;
 				if(player.hasPermission("KillRewards.levels") && plugin.getConfig().getBoolean("Advanced-Mode") && plugin.getConfig().getBoolean("Mobs." + mob + ".Level-Up")){
-					String[] stats = players.get(player).split(";");			
+					String[] stats = plugin.players.get(player).split(";");			
 					int maxLevel = plugin.getConfig().getInt("Levels.Max-Level");
 					double multiplier = plugin.getConfig().getInt("Levels.Payment-Multipler");
 					int level = Integer.parseInt(stats[0]);
@@ -97,7 +104,7 @@ public class EventListener implements Listener {
 							}		
 						}
 					}
-					players.put(player, Integer.toString(level) + ";" + Integer.toString(killsPerLevel) + ";" + Integer.toString(killsTotal));
+					plugin.players.put(player, Integer.toString(level) + ";" + Integer.toString(killsPerLevel) + ";" + Integer.toString(killsTotal));
 					addedMoney = multiplier * level;
 					Score bLevel = plugin.objective.getScore("Level:");
 					Score bTotalKills = plugin.objective.getScore("Total Kills:");
@@ -123,7 +130,7 @@ public class EventListener implements Listener {
 			if(player.getInventory().getItem(event.getNewSlot()) != null){
 				Material material = player.getInventory().getItem(event.getNewSlot()).getType();
 				if(isValidTool(material)){
-					String[] stats = players.get(player).split(";");
+					String[] stats = plugin.players.get(player).split(";");
 					int killsTotal = Integer.parseInt(stats[2]);
 					int level = Integer.parseInt(stats[0]);
 					Score bLevel = plugin.objective.getScore("Level:");
@@ -137,6 +144,28 @@ public class EventListener implements Listener {
 			}
 		}
 	}
+	
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onPlayerQuitEvent(PlayerQuitEvent event){
+		Player player = event.getPlayer();
+		if(plugin.getConfig().getBoolean("Advanced-Mode")){
+			if(!plugin.getConfig().getBoolean("Levels.Reset-On-Restart")){
+				savePlayerStats(player);
+			}		
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onWorldSaveEvent(WorldSaveEvent event){
+		if(!plugin.getConfig().getBoolean("Levels.Reset-On-Restart")){
+			Iterator<Entry<Player, String>> iterator = plugin.players.entrySet().iterator();
+		    while (iterator.hasNext()) {
+		    	Entry<Player, String> next = iterator.next();
+		    	Player player = next.getKey();
+		    	savePlayerStats(player);
+		    }
+		}
+	}
 
 	public boolean isValidTool(Material material) {
 		boolean b = false;
@@ -147,6 +176,18 @@ public class EventListener implements Listener {
 			}
 		}
 		return b;
+	}
+	
+	public void savePlayerStats(Player player){
+		File file = new File(plugin.getDataFolder(),"/players.yml");
+		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(file);
+		String stats = plugin.players.get(player);
+		playerConfig.set(player.getUniqueId().toString(), stats);
+		try {
+			playerConfig.save(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
 	}
 	
 	

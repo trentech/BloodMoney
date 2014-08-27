@@ -4,6 +4,7 @@ Levels:
   Payment-Multipler: 1.25
   Kills-Per-Level: 10
   Kills-Per-Level-Multiplier: 0.50
+  Reset-On-Restart: false
   Valid-Weapons:
   - WOOD_SWORD
   - STONE_SWORD
