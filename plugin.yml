@@ -1,0 +1,8 @@
+name: KillRewards
+main: info.trentech.KillRewards.KillRewards
+version: 0.0.1
+Permissions:
+  KillRewards.collect:
+    default: true
+  KillRewards.levels:
+    default: true

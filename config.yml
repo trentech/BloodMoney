@@ -1,0 +1,18 @@
+Advanced-Mode: true
+Levels:
+  Max-Level: 10
+  Payment-Multipler: 1.25
+  Kills-Per-Level: 10
+  Kills-Per-Level-Multiplier: 0.50
+  Valid-Weapons:
+  - WOOD_SWORD
+  - STONE_SWORD
+  - GOLD_SWORD
+  - DIAMOND_SWORD
+  - BOW
+Mobs:
+  PLAYER:
+    Minimum: 0.00
+    Maximum: 3.00
+    Level-Up: true
+ 
