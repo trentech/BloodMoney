@@ -17,7 +17,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 
-@Plugin(id = "BloodMoney", name = "BloodMoney", dependencies = "after:EconomyLite;after:TotalEconomy", version = "0.1.3")
+@Plugin(id = "BloodMoney", name = "BloodMoney", dependencies = "after:EconomyLite;after:TotalEconomy", version = "0.1.4")
 public class BloodMoney {
 
 	private static Game game;
@@ -36,9 +36,6 @@ public class BloodMoney {
 	public void onServerInit(GameInitializationEvent event) {
 		new ConfigLoader().initConfig();
 		game.getEventManager().registerListeners(this, new EventHandler());
-		if(!EconHook.initialize()){
-			log.error("Economy plugin not found!");
-		}
 	}
 	
 	@Listener

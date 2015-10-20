@@ -22,16 +22,19 @@ public class EconHook {
 		Optional<PluginContainer> plugin = BloodMoney.getGame().getPluginManager().getPlugin("EconomyLite");
 		if(plugin.isPresent()) {
 			economyLite = BloodMoney.getGame().getServiceManager().provide(EconomyLiteAPI.class).get();
+			BloodMoney.getLog().info("Hooked to EconomyLite!");
 			return true;
 		}
 		plugin = BloodMoney.getGame().getPluginManager().getPlugin("TotalEconomy");
 		if(plugin.isPresent()) {
 			totalEconomy = BloodMoney.getGame().getServiceManager().provide(TEService.class).get();
+			BloodMoney.getLog().info("Hooked to TotalEconomy!");
 			return true;
 		}
 		plugin = BloodMoney.getGame().getPluginManager().getPlugin("Craftconomy3");
 		if(plugin.isPresent()) {
 			craftConomy = BloodMoney.getGame().getServiceManager().provide(Common.class).get();
+			BloodMoney.getLog().info("Hooked to CraftConomy!");
 			return true;
 		}
 		return false;

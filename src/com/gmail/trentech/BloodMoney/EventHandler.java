@@ -77,9 +77,14 @@ public class EventHandler {
 			return;
 		}
 		
+		CommentedConfigurationNode config = new ConfigLoader().getConfig();
+		if(config.getNode("Mobs", event.getTargetEntity().getType().getName(), "Maximum").getDouble() <= 0){
+			return;
+		}
+		
 		double multiplier = 0;		
 		int kills = BloodMoney.killSteak.get(player);		
-		CommentedConfigurationNode config = new ConfigLoader().getConfig();
+		
 		TextBuilder builder = Texts.builder();	
 		if(kills >= config.getNode("Options", "Kill-Streak").getInt() && config.getNode("Options", "Kill-Streak").getInt() > 0) {
 			multiplier = config.getNode("Options", "Kill-Streak-Multiplier").getDouble();
