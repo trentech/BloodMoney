@@ -1,5 +1,6 @@
 package com.gmail.trentech.BloodMoney;
 
+import java.text.DecimalFormat;
 import java.util.Optional;
 import java.util.Random;
 
@@ -8,9 +9,13 @@ import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource;
+import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
+import org.spongepowered.api.text.TextBuilder;
 import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.chat.ChatTypes;
+import org.spongepowered.api.text.format.TextColors;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 
@@ -19,21 +24,41 @@ public class EventHandler {
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join event) {
 	    Player player = event.getTargetEntity();
-	    if(player instanceof Player){	        
+	    if(player instanceof Player) {	        
 	        BloodMoney.killSteak.put(player, 0);
 	    }
-	    
-	    
 	}
 	
     @Listener
-    public void onPlayerDeath(DestructEntityEvent.Death event){
-    	if(!(event.getTargetEntity() instanceof Living)){
+    public void onDamageEntityEvent(DamageEntityEvent event) {
+    	if(!(event.getTargetEntity() instanceof Player)) {
     		return;
     	}
     	
 		Optional<EntityDamageSource> srcOptional = event.getCause().first(EntityDamageSource.class);
-		if (!(srcOptional.isPresent())) {
+		if (!srcOptional.isPresent()) {
+			return;
+		}
+		
+    	if(!(srcOptional.get() instanceof Living)) {
+    		return;
+    	}
+    	
+		if(!((Player) event.getTargetEntity()).hasPermission("BloodMoney.collect")){
+			return;
+		}
+    	
+    	BloodMoney.killSteak.put(((Player) event.getTargetEntity()), 0);
+    }
+    
+    @Listener
+    public void onDestructEntityEvent(DestructEntityEvent.Death event) {
+    	if(!(event.getTargetEntity() instanceof Living)) {
+    		return;
+    	}
+    	
+		Optional<EntityDamageSource> srcOptional = event.getCause().first(EntityDamageSource.class);
+		if (!srcOptional.isPresent()) {
 			return;
 		}
 		
@@ -44,33 +69,35 @@ public class EventHandler {
         }
         
 		Player player = (Player) killer;
-		if(player.getGameModeData().type().get().toString().equalsIgnoreCase("CREATIVE")){
+		if(player.getGameModeData().type().get().toString().equalsIgnoreCase("CREATIVE")) {
 			return;
 		}
 		
-		double multiplier = 0;
-		
-		int kills = BloodMoney.killSteak.get(player);
-		
-		CommentedConfigurationNode config = new ConfigLoader().getConfig();
-		
-		if(kills >= config.getNode("Options", "Kill-Streak").getInt() && config.getNode("Options", "Kill-Streak").getInt() > 0){
-			multiplier = config.getNode("Options", "Kill-Streak-Multiplier").getDouble();
-			player.sendMessage(Texts.of("Kill Streak! " + kills));
+		if(!player.hasPermission("BloodMoney.collect")){
+			return;
 		}
+		
+		double multiplier = 0;		
+		int kills = BloodMoney.killSteak.get(player);		
+		CommentedConfigurationNode config = new ConfigLoader().getConfig();
+		TextBuilder builder = Texts.builder();	
+		if(kills >= config.getNode("Options", "Kill-Streak").getInt() && config.getNode("Options", "Kill-Streak").getInt() > 0) {
+			multiplier = config.getNode("Options", "Kill-Streak-Multiplier").getDouble();
+			builder = Texts.of(TextColors.GREEN, "Kill Streak! ").builder();
+		}
+		
 		double min = config.getNode("Mobs", event.getTargetEntity().getType().getName(), "Minimum").getDouble();
-		double max = config.getNode("Mobs", event.getTargetEntity().getType().getName(), "Maximum").getDouble();		
-
+		double max = config.getNode("Mobs", event.getTargetEntity().getType().getName(), "Maximum").getDouble();
 		min = (min * multiplier) + min;
 		max = (max * multiplier) + max;
-		
 		Random random = new Random();
 		double amount = min + (max - min) * random.nextDouble();
-
+		
 		EconHook.deposit(player.getUniqueId().toString(), player.getWorld(), amount);
 		BloodMoney.killSteak.put(player, BloodMoney.killSteak.get(player) + 1);
-		player.sendMessage(Texts.of(amount));
-		player.sendMessage(Texts.of(EconHook.getBalance(player.getUniqueId().toString(), player.getWorld())));
+		DecimalFormat format = new DecimalFormat("#,###,##0.00");
+
+		player.sendMessage(ChatTypes.ACTION_BAR, builder.append(Texts.of(TextColors.GREEN, config.getNode("Options", "Representation").getString(), format.format(amount))).build());
     }
 
 }

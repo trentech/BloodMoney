@@ -17,7 +17,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 
-@Plugin(id = "BloodMoney", name = "BloodMoney", dependencies = "after:EconomyLite;after:TotalEconomy", version = "0.1.2")
+@Plugin(id = "BloodMoney", name = "BloodMoney", dependencies = "after:EconomyLite;after:TotalEconomy", version = "0.1.3")
 public class BloodMoney {
 
 	private static Game game;
@@ -70,7 +70,7 @@ public class BloodMoney {
 			if(Living.class.isAssignableFrom(entityType.getEntityClass())){
 				CommentedConfigurationNode config = loader.getConfig();
 				if(config.getNode("Mobs", entityType.getName()) != null){
-					config.getNode("Mobs", entityType.getName(), "Minimum").setValue(0);
+					config.getNode("Mobs", entityType.getName(), "Minimum").setValue(1);
 					config.getNode("Mobs", entityType.getName(), "Maximum").setValue(3);
 					loader.saveConfig();
 				}

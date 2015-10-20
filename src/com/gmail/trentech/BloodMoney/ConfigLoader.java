@@ -73,6 +73,9 @@ public class ConfigLoader {
         if(config.getNode("Options", "Kill-Streak-Multiplier").getString() == null) {
         	config.getNode("Options", "Kill-Streak-Multiplier").setValue(2.00);
         }
+        if(config.getNode("Options", "Representation").getString() == null) {
+        	config.getNode("Options", "Representation").setValue("$");
+        }
         saveConfig();
 	}
 
