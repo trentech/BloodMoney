@@ -2,7 +2,7 @@ package com.gmail.trentech.BloodMoney;
 
 import java.text.DecimalFormat;
 import java.util.Optional;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.Living;
@@ -95,13 +95,12 @@ public class EventHandler {
 		double max = config.getNode("Mobs", event.getTargetEntity().getType().getName(), "Maximum").getDouble();
 		min = (min * multiplier) + min;
 		max = (max * multiplier) + max;
-		Random random = new Random();
-		double amount = min + (max - min) * random.nextDouble();
-		
+		double amount = ThreadLocalRandom.current().nextDouble(min, max);
+
 		EconHook.deposit(player.getUniqueId().toString(), player.getWorld(), amount);
 		BloodMoney.killSteak.put(player, BloodMoney.killSteak.get(player) + 1);
 		DecimalFormat format = new DecimalFormat("#,###,##0.00");
-
+		
 		player.sendMessage(ChatTypes.ACTION_BAR, builder.append(Texts.of(TextColors.GREEN, config.getNode("Options", "Representation").getString(), format.format(amount))).build());
     }
 
