@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.EntityType;
 import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.entity.living.player.Player;
@@ -17,7 +18,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 
-@Plugin(id = "BloodMoney", name = "BloodMoney", dependencies = "after:EconomyLite;after:TotalEconomy", version = "0.1.5")
+@Plugin(id = "BloodMoney", name = "BloodMoney", dependencies = "after:EconomyLite;after:TotalEconomy", version = "0.1.6")
 public class BloodMoney {
 
 	private static Game game;
@@ -27,9 +28,9 @@ public class BloodMoney {
 
 	@Listener
     public void onPreInit(GamePreInitializationEvent event) {
-		game = event.getGame();
-		plugin = event.getGame().getPluginManager().getPlugin("BloodMoney").get();
-		log = event.getGame().getPluginManager().getLogger(plugin);
+		game = Sponge.getGame();
+		plugin = getGame().getPluginManager().getPlugin("BloodMoney").get();
+		log = getGame().getPluginManager().getLogger(plugin);
 	}
 
 	@Listener
