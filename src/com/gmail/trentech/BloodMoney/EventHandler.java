@@ -1,7 +1,6 @@
 package com.gmail.trentech.BloodMoney;
 
 import java.text.DecimalFormat;
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.spongepowered.api.entity.Entity;
@@ -11,6 +10,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.cause.entity.damage.source.EntityDamageSource;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
+import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.text.TextBuilder;
 import org.spongepowered.api.text.Texts;
@@ -24,23 +24,19 @@ public class EventHandler {
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join event) {
 	    Player player = event.getTargetEntity();
+	    
 	    if(player instanceof Player) {	        
 	        BloodMoney.killSteak.put(player, 0);
 	    }
 	}
 	
     @Listener
-    public void onDamageEntityEvent(DamageEntityEvent event) {
+    public void onDamageEntityEvent(DamageEntityEvent event, @First EntityDamageSource src) {
     	if(!(event.getTargetEntity() instanceof Player)) {
     		return;
     	}
-    	
-		Optional<EntityDamageSource> srcOptional = event.getCause().first(EntityDamageSource.class);
-		if (!srcOptional.isPresent()) {
-			return;
-		}
-		
-    	if(!(srcOptional.get() instanceof Living)) {
+
+    	if(!(src instanceof Living)) {
     		return;
     	}
     	
@@ -52,18 +48,12 @@ public class EventHandler {
     }
     
     @Listener
-    public void onDestructEntityEvent(DestructEntityEvent.Death event) {
+    public void onDestructEntityEvent(DestructEntityEvent.Death event, @First EntityDamageSource src) {
     	if(!(event.getTargetEntity() instanceof Living)) {
     		return;
     	}
-    	
-		Optional<EntityDamageSource> srcOptional = event.getCause().first(EntityDamageSource.class);
-		if (!srcOptional.isPresent()) {
-			return;
-		}
-		
-        EntityDamageSource damageSource = srcOptional.get();
-        Entity killer = damageSource.getSource();
+
+        Entity killer = src.getSource();
         if (!(killer instanceof Player)) {
         	return;
         }

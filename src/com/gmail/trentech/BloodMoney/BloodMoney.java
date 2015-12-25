@@ -18,7 +18,7 @@ import org.spongepowered.api.plugin.PluginContainer;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 
-@Plugin(id = "BloodMoney", name = "BloodMoney", dependencies = "after:EconomyLite;after:TotalEconomy", version = "0.1.6")
+@Plugin(id = "BloodMoney", name = "BloodMoney", dependencies = "after:EconomyLite;after:TotalEconomy", version = "0.1.7")
 public class BloodMoney {
 
 	private static Game game;
