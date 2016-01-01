@@ -12,8 +12,8 @@ import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.text.TextBuilder;
-import org.spongepowered.api.text.Texts;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.Text.Builder;
 import org.spongepowered.api.text.chat.ChatTypes;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -75,10 +75,11 @@ public class EventHandler {
 		double multiplier = 0;		
 		int kills = BloodMoney.killSteak.get(player);		
 		
-		TextBuilder builder = Texts.builder();	
+		Builder builder = Text.builder();	
 		if(kills >= config.getNode("Options", "Kill-Streak").getInt() && config.getNode("Options", "Kill-Streak").getInt() > 0) {
 			multiplier = config.getNode("Options", "Kill-Streak-Multiplier").getDouble();
-			builder = Texts.of(TextColors.GREEN, "Kill Streak! ").builder();
+			Text.of(TextColors.GREEN, "Kill Streak! ");
+			builder.color(TextColors.GREEN).append(Text.of("Kill Streak! "));
 		}
 		
 		double min = config.getNode("Mobs", event.getTargetEntity().getType().getName(), "Minimum").getDouble();
@@ -91,7 +92,7 @@ public class EventHandler {
 		BloodMoney.killSteak.put(player, BloodMoney.killSteak.get(player) + 1);
 		DecimalFormat format = new DecimalFormat("#,###,##0.00");
 		
-		player.sendMessage(ChatTypes.ACTION_BAR, builder.append(Texts.of(TextColors.GREEN, config.getNode("Options", "Representation").getString(), format.format(amount))).build());
+		player.sendMessage(ChatTypes.ACTION_BAR, builder.append(Text.of(config.getNode("Options", "Representation").getString(), format.format(amount))).build());
     }
 
 }
