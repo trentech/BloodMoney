@@ -7,8 +7,24 @@ repositories {
         name 'Sponge maven repo'
         url 'http://repo.spongepowered.org/maven'
     }
+	maven {
+        name 'jitpack.io'
+        url 'https://jitpack.io'
+    }
+}
+
+configurations {
+    shade
+    compile.extendsFrom shade
 }
 
 dependencies {
     compile "org.spongepowered:spongeapi:3.1.0-SNAPSHOT"
+	shade "com.github.Flibio:Updatifier:-SNAPSHOT:api"
+}
+
+jar {
+    configurations.shade.copyRecursive().setTransitive(false).each { artifact ->
+      from (zipTree(artifact))
+    }
 }
