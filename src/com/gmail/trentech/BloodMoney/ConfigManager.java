@@ -23,7 +23,7 @@ public class ConfigManager {
 	private ConfigurationLoader<CommentedConfigurationNode> loader;
 	
 	public ConfigManager(String folder, String configName) {
-		folder = "config/" + Resource.ID.toLowerCase() + "/" + folder + "/";
+		folder = "config/bloodmoney/" + folder + "/";
         if (!new File(folder).isDirectory()) {
         	new File(folder).mkdirs();
         }
@@ -35,7 +35,7 @@ public class ConfigManager {
 	}
 	
 	public ConfigManager(String configName) {
-		String folder = "config/" + Resource.ID.toLowerCase() + "/";
+		String folder = "config/bloodmoney/";
         if (!new File(folder).isDirectory()) {
         	new File(folder).mkdirs();
         }
@@ -47,7 +47,7 @@ public class ConfigManager {
 	}
 	
 	public ConfigManager() {
-		String folder = "config/" + Resource.ID.toLowerCase() + "/";
+		String folder = "config/bloodmoney/";
         if (!new File(folder).isDirectory()) {
         	new File(folder).mkdirs();
         }

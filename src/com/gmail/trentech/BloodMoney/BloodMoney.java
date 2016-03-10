@@ -8,13 +8,16 @@ import org.spongepowered.api.entity.living.Living;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.service.economy.EconomyService;
 
+import me.flibio.updatifier.Updatifier;
 import ninja.leaping.configurate.ConfigurationNode;
 
-@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION)
+@Updatifier(repoName = "BloodMoney", repoOwner = "TrenTech", version = Resource.VERSION)
+@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, authors = Resource.AUTHOR, url = Resource.URL, description = Resource.DESCRIPTION, dependencies = {@Dependency(id = "Updatifier", optional = true)})
 public class BloodMoney {
 
 	private static Game game;
@@ -25,7 +28,7 @@ public class BloodMoney {
     public void onPreInitializationEvent(GamePreInitializationEvent event) {
 		game = Sponge.getGame();
 		plugin = getGame().getPluginManager().getPlugin(Resource.ID).get();
-		log = getGame().getPluginManager().getLogger(plugin);
+		log = getPlugin().getLogger();
 	}
 
 	@Listener
