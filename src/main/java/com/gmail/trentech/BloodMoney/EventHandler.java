@@ -67,7 +67,7 @@ public class EventHandler {
     	}
 
     	Player player;
-    	
+
         if (src.getSource() instanceof Projectile){
         	Projectile projectile = (Projectile) src.getSource();
         	
@@ -83,7 +83,7 @@ public class EventHandler {
         		return;
         	}
         	player = optionalPlayer.get();
-        }else if(!(src.getSource() instanceof Player)){
+        }else if(src.getSource() instanceof Player) {
         	player = (Player) src.getSource();
         }else{
         	return;
