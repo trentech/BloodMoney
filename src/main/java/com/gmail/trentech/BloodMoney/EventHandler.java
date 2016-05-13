@@ -49,6 +49,10 @@ public class EventHandler {
     	}
     	Player player = (Player) event.getTargetEntity();
     	
+		if(player.gameMode().get().equals(GameModes.CREATIVE)) {
+			return;
+		}
+		
 		if(!player.hasPermission("BloodMoney.collect")){
 			return;
 		}
