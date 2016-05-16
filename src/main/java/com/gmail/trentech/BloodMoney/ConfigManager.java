@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.spongepowered.api.entity.EntityType;
+import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.entity.living.Living;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -80,7 +81,7 @@ public class ConfigManager {
         	config.getNode("Options", "Representation").setValue("$");
         }
 		for(EntityType entityType : BloodMoney.getGame().getRegistry().getAllOf(EntityType.class)) {
-			if(Living.class.isAssignableFrom(entityType.getEntityClass())){				
+			if(Living.class.isAssignableFrom(entityType.getEntityClass()) && !(entityType.equals(EntityTypes.ARMOR_STAND) || entityType.equals(EntityTypes.HUMAN))){
 				if(config.getNode("Mobs", entityType.getName()).isVirtual()){
 					config.getNode("Mobs", entityType.getName(), "Minimum").setValue(1);
 					config.getNode("Mobs", entityType.getName(), "Maximum").setValue(3);
