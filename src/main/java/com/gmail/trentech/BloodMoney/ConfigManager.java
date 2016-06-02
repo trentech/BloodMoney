@@ -82,9 +82,9 @@ public class ConfigManager {
         }
 		for(EntityType entityType : BloodMoney.getGame().getRegistry().getAllOf(EntityType.class)) {
 			if(Living.class.isAssignableFrom(entityType.getEntityClass()) && !(entityType.equals(EntityTypes.ARMOR_STAND) || entityType.equals(EntityTypes.HUMAN))){
-				if(config.getNode("Mobs", entityType.getName()).isVirtual()){
-					config.getNode("Mobs", entityType.getName(), "Minimum").setValue(1);
-					config.getNode("Mobs", entityType.getName(), "Maximum").setValue(3);
+				if(config.getNode("Mobs", entityType.getId()).isVirtual()){
+					config.getNode("Mobs", entityType.getId(), "Minimum").setValue(1);
+					config.getNode("Mobs", entityType.getId(), "Maximum").setValue(3);
 				}
 			}
 		}

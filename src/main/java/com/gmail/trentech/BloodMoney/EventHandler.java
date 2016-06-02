@@ -118,8 +118,8 @@ public class EventHandler {
 			builder.color(TextColors.GREEN).append(Text.of("Kill Streak! "));
 		}
 		
-		double min = config.getNode("Mobs", event.getTargetEntity().getType().getName(), "Minimum").getDouble();
-		double max = config.getNode("Mobs", event.getTargetEntity().getType().getName(), "Maximum").getDouble();
+		double min = config.getNode("Mobs", event.getTargetEntity().getType().getId(), "Minimum").getDouble();
+		double max = config.getNode("Mobs", event.getTargetEntity().getType().getId(), "Maximum").getDouble();
 		min = (min * multiplier) + min;
 		max = (max * multiplier) + max;
 		double amount = ThreadLocalRandom.current().nextDouble(min, max);
