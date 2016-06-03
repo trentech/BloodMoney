@@ -82,11 +82,21 @@ public class ConfigManager {
         }
 		for(EntityType entityType : BloodMoney.getGame().getRegistry().getAllOf(EntityType.class)) {
 			if(Living.class.isAssignableFrom(entityType.getEntityClass()) && !(entityType.equals(EntityTypes.ARMOR_STAND) || entityType.equals(EntityTypes.HUMAN))){
-				if(config.getNode("Mobs", entityType.getId()).isVirtual()){
-					config.getNode("Mobs", entityType.getId(), "Minimum").setValue(1);
-					config.getNode("Mobs", entityType.getId(), "Maximum").setValue(3);
+				if(!config.getNode("Mobs", entityType.getName()).isVirtual()){
+					if(config.getNode("mobs", entityType.getId()).isVirtual()){
+						config.getNode("mobs", entityType.getId(), "minimum").setValue(config.getNode("Mobs", entityType.getName(), "Minimum").getDouble());
+						config.getNode("mobs", entityType.getId(), "maximum").setValue(config.getNode("Mobs", entityType.getName(), "Maximum").getDouble());
+					}
+					config.getNode("Mobs").removeChild(entityType.getName());
+				}
+				if(config.getNode("mobs", entityType.getId()).isVirtual()){
+					config.getNode("mobs", entityType.getId(), "minimum").setValue(1);
+					config.getNode("mobs", entityType.getId(), "maximum").setValue(3);
 				}
 			}
+		}
+		if(!config.getNode("Mobs").isVirtual()) {
+			config.removeChild("Mobs");
 		}
 		save();
 	}

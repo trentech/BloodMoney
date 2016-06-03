@@ -102,7 +102,8 @@ public class EventHandler {
 		}
 		
 		ConfigurationNode config = new ConfigManager().getConfig();
-		if(config.getNode("Mobs", event.getTargetEntity().getType().getName(), "Maximum").getDouble() <= 0){
+		
+		if(config.getNode("mobs", event.getTargetEntity().getType().getId(), "maximum").getDouble() <= 0){
 			return;
 		}
 		
@@ -118,19 +119,14 @@ public class EventHandler {
 			builder.color(TextColors.GREEN).append(Text.of("Kill Streak! "));
 		}
 		
-		double min = config.getNode("Mobs", event.getTargetEntity().getType().getId(), "Minimum").getDouble();
-		double max = config.getNode("Mobs", event.getTargetEntity().getType().getId(), "Maximum").getDouble();
+		double min = config.getNode("mobs", event.getTargetEntity().getType().getId(), "minimum").getDouble();
+		double max = config.getNode("mobs", event.getTargetEntity().getType().getId(), "maximum").getDouble();
 		min = (min * multiplier) + min;
 		max = (max * multiplier) + max;
 		double amount = ThreadLocalRandom.current().nextDouble(min, max);
 
-		if(!BloodMoney.getGame().getServiceManager().provide(EconomyService.class).isPresent()){
-			return;
-		}
-		BloodMoney.getGame().getServiceManager().provide(EconomyService.class).get();
-		
-		EconomyService economy = BloodMoney.getGame().getServiceManager().provide(EconomyService.class).get();
-
+		EconomyService economy = BloodMoney.getEconomy();
+				
 		if(!economy.hasAccount(player.getUniqueId())){
 			return;
 		}

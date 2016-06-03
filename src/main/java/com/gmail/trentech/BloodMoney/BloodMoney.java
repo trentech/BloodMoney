@@ -1,11 +1,13 @@
 package com.gmail.trentech.BloodMoney;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
@@ -20,7 +22,8 @@ public class BloodMoney {
 	private static Game game;
 	private static Logger log;
 	private static PluginContainer plugin;	
-
+	private static EconomyService economy;
+	
 	@Listener
     public void onPreInitializationEvent(GamePreInitializationEvent event) {
 		game = Sponge.getGame();
@@ -29,17 +32,18 @@ public class BloodMoney {
 	}
 
 	@Listener
-	public void onStartedServerEvent(GameStartedServerEvent event) {
+	public void onPostInitializationEvent(GamePostInitializationEvent event) {
 		new ConfigManager().init();
 		
-		if(!getGame().getServiceManager().provide(EconomyService.class).isPresent()){
+		Optional<EconomyService> optionalEconomy = getGame().getServiceManager().provide(EconomyService.class);
+		
+		if(!optionalEconomy.isPresent()){
 			getLog().error("Economy plugin not found!");
 			return;
 		}
+		economy = optionalEconomy.get();
 		
 		getGame().getEventManager().registerListeners(this, new EventHandler());
-		
-		getLog().info("BloodMoney has started!");
 	}
 
 	public static Game getGame() {
@@ -52,5 +56,9 @@ public class BloodMoney {
 
 	public static PluginContainer getPlugin() {
 		return plugin;
+	}
+	
+	public static EconomyService getEconomy() {
+		return economy;
 	}
 }
