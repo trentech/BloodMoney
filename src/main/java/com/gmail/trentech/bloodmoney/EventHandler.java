@@ -1,4 +1,4 @@
-package com.gmail.trentech.BloodMoney;
+package com.gmail.trentech.bloodmoney;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
