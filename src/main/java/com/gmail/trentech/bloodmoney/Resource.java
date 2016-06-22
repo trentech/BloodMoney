@@ -7,5 +7,5 @@ public class Resource {
 	public final static String ID = "com.gmail.trentech.bloodmoney";
 	public final static String AUTHOR = "TrenTech";
 	public final static String URL = "http://github.com/TrenTech/BloodMoney";
-	
+
 }

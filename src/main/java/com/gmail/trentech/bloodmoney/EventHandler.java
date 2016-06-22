@@ -32,93 +32,93 @@ import ninja.leaping.configurate.ConfigurationNode;
 public class EventHandler {
 
 	private static HashMap<Player, Integer> killSteak = new HashMap<Player, Integer>();
-	
+
 	@Listener
 	public void onPlayerJoin(ClientConnectionEvent.Join event) {
-	    Player player = event.getTargetEntity();
-	    
-	    if(player instanceof Player) {	        
-	        killSteak.put(player, 0);
-	    }
+		Player player = event.getTargetEntity();
+
+		if (player instanceof Player) {
+			killSteak.put(player, 0);
+		}
 	}
-	
-    @Listener
-    public void onDamageEntityEvent(DamageEntityEvent event, @First EntityDamageSource src) {
-    	if(!(event.getTargetEntity() instanceof Player)) {
-    		return;
-    	}
-    	Player player = (Player) event.getTargetEntity();
-    	
-		if(player.gameMode().get().equals(GameModes.CREATIVE)) {
+
+	@Listener
+	public void onDamageEntityEvent(DamageEntityEvent event, @First EntityDamageSource src) {
+		if (!(event.getTargetEntity() instanceof Player)) {
 			return;
 		}
-		
-		if(!player.hasPermission("BloodMoney.collect")){
+		Player player = (Player) event.getTargetEntity();
+
+		if (player.gameMode().get().equals(GameModes.CREATIVE)) {
 			return;
 		}
-		
-    	if(!(src.getSource() instanceof Living)) {
-    		return;
-    	}
 
-    	killSteak.put(player, 0);
-    }
-    
-    @Listener
-    public void onDestructEntityEvent(DestructEntityEvent.Death event, @First EntityDamageSource src) {
-    	if(!(event.getTargetEntity() instanceof Living)) {
-    		return;
-    	}
-
-    	Player player;
-
-        if (src.getSource() instanceof Projectile){
-        	Projectile projectile = (Projectile) src.getSource();
-        	
-        	Optional<UUID> optionalUUID = projectile.getCreator();
-        	
-        	if(!optionalUUID.isPresent()){
-        		return;
-        	}
-        	
-        	Optional<Player> optionalPlayer = BloodMoney.getGame().getServer().getPlayer(optionalUUID.get());
-        	
-        	if(!optionalPlayer.isPresent()){
-        		return;
-        	}
-        	player = optionalPlayer.get();
-        }else if(src.getSource() instanceof Player) {
-        	player = (Player) src.getSource();
-        }else{
-        	return;
-        }
-
-		if(player.gameMode().get().equals(GameModes.CREATIVE)) {
+		if (!player.hasPermission("BloodMoney.collect")) {
 			return;
 		}
-		
-		if(!player.hasPermission("BloodMoney.collect")){
+
+		if (!(src.getSource() instanceof Living)) {
 			return;
 		}
-		
+
+		killSteak.put(player, 0);
+	}
+
+	@Listener
+	public void onDestructEntityEvent(DestructEntityEvent.Death event, @First EntityDamageSource src) {
+		if (!(event.getTargetEntity() instanceof Living)) {
+			return;
+		}
+
+		Player player;
+
+		if (src.getSource() instanceof Projectile) {
+			Projectile projectile = (Projectile) src.getSource();
+
+			Optional<UUID> optionalUUID = projectile.getCreator();
+
+			if (!optionalUUID.isPresent()) {
+				return;
+			}
+
+			Optional<Player> optionalPlayer = BloodMoney.getGame().getServer().getPlayer(optionalUUID.get());
+
+			if (!optionalPlayer.isPresent()) {
+				return;
+			}
+			player = optionalPlayer.get();
+		} else if (src.getSource() instanceof Player) {
+			player = (Player) src.getSource();
+		} else {
+			return;
+		}
+
+		if (player.gameMode().get().equals(GameModes.CREATIVE)) {
+			return;
+		}
+
+		if (!player.hasPermission("BloodMoney.collect")) {
+			return;
+		}
+
 		ConfigurationNode config = new ConfigManager().getConfig();
-		
-		if(config.getNode("mobs", event.getTargetEntity().getType().getId(), "maximum").getDouble() <= 0){
+
+		if (config.getNode("mobs", event.getTargetEntity().getType().getId(), "maximum").getDouble() <= 0) {
 			return;
 		}
-		
-		double multiplier = 0;		
-		int kills = killSteak.get(player);		
+
+		double multiplier = 0;
+		int kills = killSteak.get(player);
 		int killStreak = config.getNode("Options", "Kill-Streak").getInt();
-		
+
 		Builder builder = Text.builder().color(TextColors.YELLOW);
 
-		if(kills >= killStreak && killStreak != 0) {
+		if (kills >= killStreak && killStreak != 0) {
 			multiplier = config.getNode("Options", "Kill-Streak-Multiplier").getDouble();
 			Text.of(TextColors.GREEN, "Kill Streak! ");
 			builder.color(TextColors.GREEN).append(Text.of("Kill Streak! "));
 		}
-		
+
 		double min = config.getNode("mobs", event.getTargetEntity().getType().getId(), "minimum").getDouble();
 		double max = config.getNode("mobs", event.getTargetEntity().getType().getId(), "maximum").getDouble();
 		min = (min * multiplier) + min;
@@ -126,17 +126,17 @@ public class EventHandler {
 		double amount = ThreadLocalRandom.current().nextDouble(min, max);
 
 		EconomyService economy = BloodMoney.getEconomy();
-				
-		if(!economy.hasAccount(player.getUniqueId())){
+
+		if (!economy.hasAccount(player.getUniqueId())) {
 			return;
 		}
-		
+
 		UniqueAccount account = economy.getOrCreateAccount(player.getUniqueId()).get();
-		
-		if(account.deposit(economy.getDefaultCurrency(), new BigDecimal(amount), Cause.of(NamedCause.source(BloodMoney.getPlugin()))).getResult() == ResultType.SUCCESS){
-			killSteak.put(player, kills+1);
+
+		if (account.deposit(economy.getDefaultCurrency(), new BigDecimal(amount), Cause.of(NamedCause.source(BloodMoney.getPlugin()))).getResult() == ResultType.SUCCESS) {
+			killSteak.put(player, kills + 1);
 			player.sendMessage(ChatTypes.ACTION_BAR, builder.append(Text.of(config.getNode("Options", "Representation").getString(), new DecimalFormat("#,###,##0.00").format(amount))).build());
 		}
-    }
+	}
 
 }

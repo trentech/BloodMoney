@@ -16,16 +16,16 @@ import org.spongepowered.api.service.economy.EconomyService;
 import me.flibio.updatifier.Updatifier;
 
 @Updatifier(repoName = "BloodMoney", repoOwner = "TrenTech", version = Resource.VERSION)
-@Plugin(id = Resource.ID, name = Resource.NAME, authors = Resource.AUTHOR, url = Resource.URL, dependencies = {@Dependency(id = "Updatifier", optional = true)})
+@Plugin(id = Resource.ID, name = Resource.NAME, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true) })
 public class BloodMoney {
 
 	private static Game game;
 	private static Logger log;
-	private static PluginContainer plugin;	
+	private static PluginContainer plugin;
 	private static EconomyService economy;
-	
+
 	@Listener
-    public void onPreInitializationEvent(GamePreInitializationEvent event) {
+	public void onPreInitializationEvent(GamePreInitializationEvent event) {
 		game = Sponge.getGame();
 		plugin = getGame().getPluginManager().getPlugin(Resource.ID).get();
 		log = getPlugin().getLogger();
@@ -34,15 +34,15 @@ public class BloodMoney {
 	@Listener
 	public void onPostInitializationEvent(GamePostInitializationEvent event) {
 		new ConfigManager().init();
-		
+
 		Optional<EconomyService> optionalEconomy = getGame().getServiceManager().provide(EconomyService.class);
-		
-		if(!optionalEconomy.isPresent()){
+
+		if (!optionalEconomy.isPresent()) {
 			getLog().error("Economy plugin not found!");
 			return;
 		}
 		economy = optionalEconomy.get();
-		
+
 		getGame().getEventManager().registerListeners(this, new EventHandler());
 	}
 
@@ -57,7 +57,7 @@ public class BloodMoney {
 	public static PluginContainer getPlugin() {
 		return plugin;
 	}
-	
+
 	public static EconomyService getEconomy() {
 		return economy;
 	}
