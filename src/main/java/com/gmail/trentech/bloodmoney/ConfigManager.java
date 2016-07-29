@@ -17,32 +17,8 @@ public class ConfigManager {
 	private CommentedConfigurationNode config;
 	private ConfigurationLoader<CommentedConfigurationNode> loader;
 
-	public ConfigManager(String folder, String configName) {
-		folder = "config" + File.separator + "bloodmoney" + File.separator + folder;
-		
-		if (!new File(folder).isDirectory()) {
-			new File(folder).mkdirs();
-		}
-		file = new File(folder, configName);
-
-		create();
-		load();
-	}
-
-	public ConfigManager(String configName) {
-		String folder = "config" + File.separator + "bloodmoney";
-		
-		if (!new File(folder).isDirectory()) {
-			new File(folder).mkdirs();
-		}
-		file = new File(folder, configName);
-
-		create();
-		load();
-	}
-
 	public ConfigManager() {
-		String folder = "config" + File.separator + "bloodmoney";
+		String folder = "config" + File.separator + Resource.ID;
 		
 		if (!new File(folder).isDirectory()) {
 			new File(folder).mkdirs();
